@@ -27,7 +27,6 @@ public class WhatsappRepository {
         this.messageId = 0;
     }
 
-    // 1)
     public String createUser(String name, String mobile) throws Exception
     {
         //If the mobile number exists in database, throw "User already exists" exception
@@ -45,7 +44,6 @@ public class WhatsappRepository {
         }
     }
 
-    // 2)
     public Group createGroup(List<User> users)
     {
         //int count = 0;
@@ -71,7 +69,6 @@ public class WhatsappRepository {
         return null;         //if users.size()<2
     }
 
-    // 3)
     public int createMessage(String content)
     {
         messageId++;
@@ -79,12 +76,12 @@ public class WhatsappRepository {
         return  messageId;
     }
 
-    //4)
     public int sendMessage(Message message, User sender, Group group) throws Exception
     {
         if (groupUserMp.containsKey(group))
         {
             List<User> currUsers = groupUserMp.get(group);
+
             if (currUsers.contains(sender))
             {
                 senderMp.put(message, sender);
@@ -117,15 +114,15 @@ public class WhatsappRepository {
     // 5)
     public String changeAdmin(User approver, User user, Group group) throws Exception
     {
-        if (adminMap.containsKey(group))
+        if (adminMp.containsKey(group))
         {
-            User currAdmin = adminMap.get(group);
+            User currAdmin = adminMp.get(group);
             if (approver.equals(currAdmin))
             {
-                List<User> currUsers = groupUserMap.get(group);
+                List<User> currUsers = groupUserMp.get(group);
                 if (currUsers.contains(user))
                 {
-                    adminMap.put(group, user);
+                    adminMp.put(group, user);
                     return "SUCCESS";
                 }
                 else
@@ -146,8 +143,8 @@ public class WhatsappRepository {
     public int removeUserfromDb(User user)throws Exception{
         Group checkGroup = null;
         boolean userAvailability = false;
-        for(Group group:groupUserMap.keySet()){
-            List<User> userList = groupUserMap.get(group);
+        for(Group group:groupUserMp.keySet()){
+            List<User> userList = groupUserMp.get(group);
             for(User user1:userList){
                 if(user1 == user){
                     checkGroup = group;
@@ -159,40 +156,48 @@ public class WhatsappRepository {
             throw new Exception("User not found");
         }
         boolean adminCheck = false;
-        for(Group group : adminMap.keySet()){
-            if(adminMap.get(group) == user){
+
+        for(Group group : adminMp.keySet()){
+            if(adminMp.get(group) == user){
                 adminCheck = true;
             }
         }
+
         if(adminCheck){
-            throw new Exception("Cannot remove admin");
+            throw new Exception("Admin Cannot be removed");
         }
-        List<User> users = groupUserMap.get(checkGroup);
+
+        List<User> users = groupUserMp.get(checkGroup);
+
         for(User user1:users){
+
             if(user1 == user){
                 users.remove(user1);
             }
         }
-        Set<String> username = userMap.keySet();
+        Set<String> username = userMp.keySet();
         for(String s:username){
-            if(userMap.get(s)==user){
-                userMap.remove(s);
+
+            if(userMp.get(s)==user){
+                userMp.remove(s);
             }
         }
-        List<Message> messages = groupMessageMap.get(checkGroup);
+        List<Message> messages = groupMessageMp.get(checkGroup);
         for(Message message:messages){
-            if(senderMap.get(message)==user){
-                senderMap.remove(message);
+
+            if(senderMp.get(message)==user){
+                senderMp.remove(message);
                 messages.remove(message);
             }
         }
-        List<Message> messages1 = groupMessageMap.get(checkGroup);
-        List<User> users1 = groupUserMap.get(checkGroup);
+        List<Message> messages1 = groupMessageMp.get(checkGroup);
 
-        int ans =messages1.size()+ users1.size()+messageId;
+        List<User> users1 = groupUserMp.get(checkGroup);
+
+        int result = messages1.size()+ users1.size()+messageId;
 
 
-        return ans;
+        return result;
 
     }
 
