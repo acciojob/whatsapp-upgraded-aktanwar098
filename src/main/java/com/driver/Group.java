@@ -3,11 +3,6 @@ package com.driver;
 public class Group {
     private String name;
     private int numberOfParticipants;
-    //constructors,getters and setters
-
-
-    public Group() {
-    }
 
     public Group(String name, int numberOfParticipants) {
         this.name = name;
